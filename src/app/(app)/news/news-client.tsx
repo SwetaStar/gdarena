@@ -29,7 +29,11 @@ export function NewsClient({ knowledgeLevel }: { knowledgeLevel: KnowledgeLevel 
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch("/api/feeds");
+        const res = await fetch("/api/feeds", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ geminiKey }),
+        });
         const data: { feeds?: FeedResult[]; error?: string } = await res.json();
         if (cancelled) return;
         if (data.feeds) {
@@ -46,7 +50,7 @@ export function NewsClient({ knowledgeLevel }: { knowledgeLevel: KnowledgeLevel 
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [geminiKey]);
 
   const generateBrief = useCallback(
     async (target: SelectedArticle) => {
@@ -139,7 +143,8 @@ export function NewsClient({ knowledgeLevel }: { knowledgeLevel: KnowledgeLevel 
               <Link href="/profile" className="font-medium underline">
                 Profile
               </Link>{" "}
-              to generate briefs.
+              to generate briefs and filter out crime/celebrity/lifestyle
+              noise from your feeds.
             </p>
           )}
 
