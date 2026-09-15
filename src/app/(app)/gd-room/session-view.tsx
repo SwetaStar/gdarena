@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useStoredGeminiKey } from "@/lib/gemini-key";
+import { useSpeechInput } from "@/lib/gd/use-speech-input";
 import type { KnowledgeLevel } from "@/lib/knowledge";
 import type { GDScorecard, Speaker, TranscriptMessage } from "@/lib/gd/types";
 
@@ -53,6 +54,8 @@ export function SessionView({
   const [timeUp, setTimeUp] = useState(false);
   const [scoring, setScoring] = useState(false);
   const [scoreError, setScoreError] = useState<string | null>(null);
+
+  const speech = useSpeechInput({ onTranscript: setInput });
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -310,25 +313,40 @@ export function SessionView({
         <div ref={bottomRef} />
       </div>
 
-      <div className="flex gap-2 border-t border-divider px-4 py-3">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSend();
-          }}
-          placeholder={timeUp ? "Session ended" : "Make your point…"}
-          disabled={timeUp}
-          className="input flex-1"
-        />
-        <button
-          type="button"
-          onClick={handleSend}
-          disabled={timeUp || !input.trim()}
-          className="btn-secondary"
-        >
-          Send
-        </button>
+      <div className="flex flex-col gap-1.5 border-t border-divider px-4 py-3">
+        {speech.error && <p className="text-xs text-red-600 dark:text-red-400">{speech.error}</p>}
+        <div className="flex gap-2">
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSend();
+            }}
+            placeholder={timeUp ? "Session ended" : speech.listening ? "Listening…" : "Make your point…"}
+            disabled={timeUp || speech.listening}
+            className="input flex-1"
+          />
+          {speech.supported && (
+            <button
+              type="button"
+              onClick={speech.listening ? speech.stop : speech.start}
+              disabled={timeUp}
+              aria-label={speech.listening ? "Stop dictating" : "Speak your point"}
+              title={speech.listening ? "Stop dictating" : "Speak your point"}
+              className={`btn-secondary ${speech.listening ? "border-red-400 text-red-600 dark:border-red-800 dark:text-red-400" : ""}`}
+            >
+              {speech.listening ? "● Listening" : "🎤"}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={timeUp || speech.listening || !input.trim()}
+            className="btn-secondary"
+          >
+            Send
+          </button>
+        </div>
       </div>
     </div>
   );
