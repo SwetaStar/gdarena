@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { FeedManager } from "@/components/feed-manager";
+import { FeedManager, FeedUrlHelpTooltip } from "@/components/feed-manager";
 import { GeminiKeyStatus } from "./gemini-key-status";
 
 export default async function ProfilePage() {
@@ -58,8 +58,8 @@ export default async function ProfilePage() {
         <GeminiKeyStatus />
 
         <div className="flex flex-col gap-2">
-          <h2 className="text-sm font-medium text-black/50 dark:text-white/50">
-            News sources
+          <h2 className="flex items-center gap-1.5 text-sm font-medium text-black/50 dark:text-white/50">
+            News sources <FeedUrlHelpTooltip />
           </h2>
           <FeedManager initialFeeds={feeds ?? []} />
         </div>

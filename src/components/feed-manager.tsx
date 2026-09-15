@@ -2,8 +2,24 @@
 
 import { useState, useTransition } from "react";
 import { addFeed, removeFeed } from "@/app/actions/onboarding";
+import { InfoTooltip } from "@/components/info-tooltip";
 
 export type Feed = { id: string; name: string; url: string };
+
+/** Shared hover/focus hint for finding a source's actual RSS URL. */
+export function FeedUrlHelpTooltip() {
+  return (
+    <InfoTooltip label="How to find a feed URL">
+      <p className="mb-1 font-medium">A homepage URL won&apos;t work</p>
+      <p>You need the feed&apos;s actual XML endpoint:</p>
+      <ul className="mt-1 list-disc space-y-0.5 pl-4">
+        <li>Try appending /rss, /rss/news, /feed, or /rss.xml to the site</li>
+        <li>View the homepage&apos;s page source and search for &quot;rss+xml&quot;</li>
+        <li>Or search &quot;&lt;site name&gt; RSS feed&quot;</li>
+      </ul>
+    </InfoTooltip>
+  );
+}
 
 const inputClass =
   "rounded-md border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-black/40 dark:border-white/20 dark:focus:border-white/40";

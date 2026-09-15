@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { saveInterests, saveKnowledgeLevel } from "@/app/actions/onboarding";
 import { INTERESTS, type KnowledgeLevel } from "@/lib/knowledge";
 import { setStoredGeminiKey, useStoredGeminiKey } from "@/lib/gemini-key";
-import { FeedManager, type Feed } from "@/components/feed-manager";
+import { FeedManager, FeedUrlHelpTooltip, type Feed } from "@/components/feed-manager";
 
 const KNOWLEDGE_OPTIONS: {
   value: KnowledgeLevel;
@@ -88,7 +88,7 @@ function StepShell({
   continueDisabled,
   children,
 }: {
-  title: string;
+  title: React.ReactNode;
   skippable?: boolean;
   onSkip?: () => void;
   onContinue: () => void;
@@ -98,7 +98,7 @@ function StepShell({
 }) {
   return (
     <div className="flex flex-col gap-5">
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <h2 className="flex items-center gap-1.5 text-lg font-semibold">{title}</h2>
       {children}
       <div className="flex items-center justify-between gap-3">
         {skippable ? (
@@ -245,7 +245,16 @@ function FeedsStep({
   onNext: () => void;
 }) {
   return (
-    <StepShell title="Your news sources" skippable onSkip={onNext} onContinue={onNext}>
+    <StepShell
+      title={
+        <>
+          Your news sources <FeedUrlHelpTooltip />
+        </>
+      }
+      skippable
+      onSkip={onNext}
+      onContinue={onNext}
+    >
       <FeedManager initialFeeds={initialFeeds} />
     </StepShell>
   );
