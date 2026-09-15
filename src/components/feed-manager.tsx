@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { addFeed, removeFeed } from "@/app/actions/onboarding";
 import { InfoTooltip } from "@/components/info-tooltip";
+import { SUGGESTED_FEEDS } from "@/lib/feeds/suggested";
 
 export type Feed = { id: string; name: string; url: string };
 
@@ -33,21 +34,40 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [pendingSuggestion, setPendingSuggestion] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  function handleAdd() {
-    if (!name.trim() || !url.trim()) return;
+  const addedUrls = new Set(feeds.map((f) => f.url));
+  const suggestions = SUGGESTED_FEEDS.filter((s) => !addedUrls.has(s.url));
+
+  function submitFeed(feedName: string, feedUrl: string, onDone?: () => void) {
     setError(null);
     startTransition(async () => {
-      const result = await addFeed(name, url);
+      const result = await addFeed(feedName, feedUrl);
       if (result.ok) {
-        setFeeds((prev) => [...prev, { id: crypto.randomUUID(), name, url }]);
-        setName("");
-        setUrl("");
+        setFeeds((prev) => [
+          ...prev,
+          { id: crypto.randomUUID(), name: feedName, url: feedUrl },
+        ]);
+        onDone?.();
       } else {
         setError(result.error);
       }
+      setPendingSuggestion(null);
     });
+  }
+
+  function handleAdd() {
+    if (!name.trim() || !url.trim()) return;
+    submitFeed(name, url, () => {
+      setName("");
+      setUrl("");
+    });
+  }
+
+  function handleAddSuggestion(suggestion: { name: string; url: string }) {
+    setPendingSuggestion(suggestion.url);
+    submitFeed(suggestion.name, suggestion.url);
   }
 
   function handleRemove(id: string) {
@@ -90,6 +110,27 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
         )}
       </div>
 
+      {suggestions.length > 0 && (
+        <div className="flex flex-col gap-2 border-t border-black/10 pt-4 dark:border-white/15">
+          <h3 className="text-xs font-medium text-black/45 dark:text-white/45">
+            Popular sources
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {suggestions.map((s) => (
+              <button
+                key={s.url}
+                type="button"
+                onClick={() => handleAddSuggestion(s)}
+                disabled={isPending}
+                className="rounded-full border border-black/15 px-3 py-1 text-xs disabled:opacity-50 dark:border-white/20"
+              >
+                {pendingSuggestion === s.url ? "Adding…" : `+ ${s.name}`}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-2 border-t border-black/10 pt-4 dark:border-white/15">
         <div className="flex gap-2">
           <input
@@ -112,7 +153,7 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
           disabled={isPending || !name.trim() || !url.trim()}
           className="self-start rounded-md border border-black/15 px-3 py-1.5 text-sm disabled:opacity-50 dark:border-white/20"
         >
-          {isPending ? "Checking feed…" : "Add feed"}
+          {isPending && !pendingSuggestion ? "Checking feed…" : "Add feed"}
         </button>
       </div>
     </div>
