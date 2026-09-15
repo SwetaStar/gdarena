@@ -23,21 +23,28 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
     if (!name.trim() || !url.trim()) return;
     setError(null);
     startTransition(async () => {
-      try {
-        await addFeed(name, url);
+      const result = await addFeed(name, url);
+      if (result.ok) {
         setFeeds((prev) => [...prev, { id: crypto.randomUUID(), name, url }]);
         setName("");
         setUrl("");
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "Could not add feed.");
+      } else {
+        setError(result.error);
       }
     });
   }
 
   function handleRemove(id: string) {
+    const removed = feeds.find((f) => f.id === id);
     setFeeds((prev) => prev.filter((f) => f.id !== id));
     startTransition(async () => {
-      await removeFeed(id);
+      const result = await removeFeed(id);
+      if (!result.ok && removed) {
+        // Deletion failed server-side — put it back rather than leaving
+        // the UI showing a feed that's actually still there.
+        setFeeds((prev) => [...prev, removed]);
+        setError(result.error);
+      }
     });
   }
 

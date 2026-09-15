@@ -133,6 +133,7 @@ function KnowledgeStep({
   onNext: () => void;
 }) {
   const [value, setValue] = useState<KnowledgeLevel | null>(initialValue);
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   return (
@@ -143,9 +144,14 @@ function KnowledgeStep({
       continueDisabled={!value || isPending}
       onContinue={() => {
         if (!value) return;
+        setError(null);
         startTransition(async () => {
-          await saveKnowledgeLevel(value);
-          onNext();
+          const result = await saveKnowledgeLevel(value);
+          if (result.ok) {
+            onNext();
+          } else {
+            setError(result.error);
+          }
         });
       }}
     >
@@ -168,6 +174,7 @@ function KnowledgeStep({
           </button>
         ))}
       </div>
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </StepShell>
   );
 }
@@ -180,6 +187,7 @@ function InterestsStep({
   onNext: () => void;
 }) {
   const [selected, setSelected] = useState<string[]>(initialValue);
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function toggle(interest: string) {
@@ -197,9 +205,14 @@ function InterestsStep({
       onSkip={onNext}
       continueDisabled={isPending}
       onContinue={() => {
+        setError(null);
         startTransition(async () => {
-          await saveInterests(selected);
-          onNext();
+          const result = await saveInterests(selected);
+          if (result.ok) {
+            onNext();
+          } else {
+            setError(result.error);
+          }
         });
       }}
     >
@@ -219,6 +232,7 @@ function InterestsStep({
           </button>
         ))}
       </div>
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
     </StepShell>
   );
 }
