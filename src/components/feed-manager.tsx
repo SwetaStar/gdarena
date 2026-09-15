@@ -22,9 +22,6 @@ export function FeedUrlHelpTooltip() {
   );
 }
 
-const inputClass =
-  "rounded-md border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-black/40 dark:border-white/20 dark:focus:border-white/40";
-
 /**
  * Add/remove RSS feeds. Shared between the onboarding wizard's feeds step
  * and the Profile page's feed management section.
@@ -90,13 +87,13 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
         {feeds.map((feed) => (
           <div
             key={feed.id}
-            className="flex items-center justify-between gap-2 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/15"
+            className="flex items-center justify-between gap-2 rounded-md border border-divider px-3 py-2 text-sm"
           >
             <span className="truncate">{feed.name}</span>
             <button
               type="button"
               onClick={() => handleRemove(feed.id)}
-              className="shrink-0 text-black/40 hover:text-black/70 dark:text-white/40 dark:hover:text-white/70"
+              className="-m-1.5 shrink-0 p-1.5 text-subtle hover:text-black/70 dark:hover:text-white/70"
               aria-label={`Remove ${feed.name}`}
             >
               ✕
@@ -104,17 +101,13 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
           </div>
         ))}
         {feeds.length === 0 && (
-          <p className="text-sm text-black/50 dark:text-white/50">
-            No feeds yet — add one below.
-          </p>
+          <p className="text-sm text-muted">No feeds yet — add one below.</p>
         )}
       </div>
 
       {suggestions.length > 0 && (
-        <div className="flex flex-col gap-2 border-t border-black/10 pt-4 dark:border-white/15">
-          <h3 className="text-xs font-medium text-black/45 dark:text-white/45">
-            Popular sources
-          </h3>
+        <div className="flex flex-col gap-2 border-t border-divider pt-4">
+          <h3 className="text-xs font-medium text-subtle">Popular sources</h3>
           <div className="flex flex-wrap gap-2">
             {suggestions.map((s) => (
               <button
@@ -122,7 +115,7 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
                 type="button"
                 onClick={() => handleAddSuggestion(s)}
                 disabled={isPending}
-                className="rounded-full border border-black/15 px-3 py-1 text-xs disabled:opacity-50 dark:border-white/20"
+                className="rounded-full border border-default px-3 py-1 text-xs disabled:opacity-50"
               >
                 {pendingSuggestion === s.url ? "Adding…" : `+ ${s.name}`}
               </button>
@@ -131,19 +124,19 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
         </div>
       )}
 
-      <div className="flex flex-col gap-2 border-t border-black/10 pt-4 dark:border-white/15">
+      <div className="flex flex-col gap-2 border-t border-divider pt-4">
         <div className="flex gap-2">
           <input
             placeholder="Feed name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className={`${inputClass} flex-1`}
+            className="input flex-1"
           />
           <input
             placeholder="Feed URL"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className={`${inputClass} flex-1`}
+            className="input flex-1"
           />
         </div>
         {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
@@ -151,7 +144,7 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
           type="button"
           onClick={handleAdd}
           disabled={isPending || !name.trim() || !url.trim()}
-          className="self-start rounded-md border border-black/15 px-3 py-1.5 text-sm disabled:opacity-50 dark:border-white/20"
+          className="btn-secondary self-start"
         >
           {isPending && !pendingSuggestion ? "Checking feed…" : "Add feed"}
         </button>

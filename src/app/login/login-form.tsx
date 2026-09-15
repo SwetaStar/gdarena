@@ -19,7 +19,7 @@ export function LoginForm() {
           type="email"
           required
           autoComplete="email"
-          className="rounded-md border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-black/40 dark:border-white/20 dark:focus:border-white/40"
+          className="input"
         />
       </div>
 
@@ -33,7 +33,7 @@ export function LoginForm() {
           type="password"
           required
           autoComplete="current-password"
-          className="rounded-md border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-black/40 dark:border-white/20 dark:focus:border-white/40"
+          className="input"
         />
       </div>
 
@@ -41,15 +41,11 @@ export function LoginForm() {
         <p className="text-sm text-red-600 dark:text-red-400">{state.error}</p>
       )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="mt-1 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className="btn-primary mt-1">
         {pending ? "Logging in…" : "Log in"}
       </button>
 
-      <p className="text-center text-sm text-black/60 dark:text-white/60">
+      <p className="text-center text-sm text-muted">
         New to GDArena?{" "}
         <Link href="/signup" className="font-medium underline">
           Create an account

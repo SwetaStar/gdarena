@@ -7,7 +7,7 @@ export default function SignupPage() {
         <h1 className="text-2xl font-semibold tracking-tight">
           Create your GDArena account
         </h1>
-        <p className="text-sm text-black/60 dark:text-white/60">
+        <p className="text-sm text-muted">
           Free GD prep and daily news for MBA aspirants.
         </p>
       </div>

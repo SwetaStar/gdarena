@@ -23,7 +23,7 @@ export function TabNav() {
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
               active
                 ? "bg-foreground text-background"
-                : "text-black/60 hover:bg-black/5 dark:text-white/60 dark:hover:bg-white/10"
+                : "text-muted hover:bg-black/5 dark:hover:bg-white/10"
             }`}
           >
             {tab.label}

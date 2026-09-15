@@ -34,7 +34,7 @@ export function ArticleBrief({
       <button
         type="button"
         onClick={onBack}
-        className="self-start text-sm text-black/50 dark:text-white/50"
+        className="-m-1.5 self-start p-1.5 text-sm text-muted"
       >
         ← Back
       </button>
@@ -46,18 +46,14 @@ export function ArticleBrief({
             href={article.link}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-black/45 underline dark:text-white/45"
+            className="text-xs text-muted underline"
           >
             {article.sourceName} — open original
           </a>
         )}
       </div>
 
-      {loading && (
-        <p className="text-sm text-black/50 dark:text-white/50">
-          Generating your brief…
-        </p>
-      )}
+      {loading && <p className="text-sm text-muted">Generating your brief…</p>}
 
       {!loading && error && (
         <div className="flex flex-col items-start gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-400">
@@ -83,7 +79,7 @@ export function ArticleBrief({
                 className={`flex-1 rounded px-3 py-1.5 font-medium transition-colors ${
                   view === v
                     ? "bg-background text-foreground shadow-sm"
-                    : "text-black/50 dark:text-white/50"
+                    : "text-muted"
                 }`}
               >
                 {v === "plain" ? "Plain" : "MBA"}
@@ -103,7 +99,7 @@ export function ArticleBrief({
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <h3 className="text-xs font-semibold uppercase tracking-wide text-black/40 dark:text-white/40">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-subtle">
         {title}
       </h3>
       {children}
@@ -127,7 +123,7 @@ function PlainView({ brief }: { brief: Brief }) {
             {plain.key_terms.map((kt) => (
               <div key={kt.term} className="text-sm">
                 <dt className="font-medium">{kt.term}</dt>
-                <dd className="text-black/60 dark:text-white/60">{kt.meaning}</dd>
+                <dd className="text-muted">{kt.meaning}</dd>
               </div>
             ))}
           </dl>

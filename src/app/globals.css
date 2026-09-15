@@ -22,5 +22,41 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Was hard-coded to Arial — the Geist font loaded via next/font in
+     layout.tsx was never actually applied to any text. */
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer components {
+  /* Secondary text, two consistent levels. Before this, the app had six
+     slightly different opacity values (40/45/50/60/70/80) doing the same
+     job in different components. */
+  .text-muted {
+    @apply text-black/50 dark:text-white/50;
+  }
+  .text-subtle {
+    @apply text-black/40 dark:text-white/40;
+  }
+
+  /* Borders: default (inputs, buttons, cards) vs. divider (section/list
+     separators, one step lighter). */
+  .border-default {
+    @apply border-black/15 dark:border-white/20;
+  }
+  .border-divider {
+    @apply border-black/10 dark:border-white/15;
+  }
+
+  .input {
+    @apply rounded-md border border-black/15 bg-transparent px-3 py-2 text-sm outline-none transition-colors;
+    @apply focus:border-black/40 dark:border-white/20 dark:focus:border-white/40;
+  }
+
+  .btn-primary {
+    @apply rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply rounded-md border border-black/15 px-3 py-1.5 text-sm transition-colors disabled:opacity-50 dark:border-white/20;
+  }
 }

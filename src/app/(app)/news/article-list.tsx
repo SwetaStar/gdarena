@@ -17,7 +17,7 @@ export function ArticleList({
       <button
         type="button"
         onClick={onUploadPdf}
-        className="mx-4 mt-4 self-start rounded-md border border-black/15 px-3 py-1.5 text-sm dark:border-white/20"
+        className="btn-secondary mx-4 mt-4 self-start"
       >
         Upload a PDF instead
       </button>
@@ -27,7 +27,7 @@ export function ArticleList({
           <div className="flex items-baseline justify-between px-4">
             <h2 className="text-sm font-semibold">{feed.name}</h2>
             {feed.paywalled && (
-              <span className="text-xs text-black/40 dark:text-white/40">
+              <span className="text-xs text-subtle">
                 Summary only — upload PDF for full analysis
               </span>
             )}
@@ -40,9 +40,7 @@ export function ArticleList({
           )}
 
           {feed.items && feed.items.length === 0 && (
-            <p className="px-4 text-sm text-black/50 dark:text-white/50">
-              No articles right now.
-            </p>
+            <p className="px-4 text-sm text-muted">No articles right now.</p>
           )}
 
           {feed.items && feed.items.length > 0 && (
@@ -52,12 +50,12 @@ export function ArticleList({
                   <button
                     type="button"
                     onClick={() => onSelectArticle(feed, article)}
-                    className="flex w-full flex-col gap-0.5 border-b border-black/5 px-4 py-3 text-left transition-colors hover:bg-black/[0.03] dark:border-white/10 dark:hover:bg-white/5"
+                    className="flex w-full flex-col gap-0.5 border-b border-divider px-4 py-3 text-left transition-colors hover:bg-black/[0.03] dark:hover:bg-white/5"
                   >
                     <span className="text-sm font-medium leading-snug">
                       {article.title}
                     </span>
-                    <span className="text-xs text-black/45 dark:text-white/45">
+                    <span className="text-xs text-muted">
                       {feed.name}
                       {article.publishedAt
                         ? ` · ${formatRelativeTime(article.publishedAt)}`
@@ -72,7 +70,7 @@ export function ArticleList({
       ))}
 
       {feeds.length === 0 && (
-        <p className="px-4 text-sm text-black/50 dark:text-white/50">
+        <p className="px-4 text-sm text-muted">
           No feeds yet — add some from your Profile tab.
         </p>
       )}

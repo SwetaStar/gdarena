@@ -19,7 +19,7 @@ export function SignupForm() {
             name="firstName"
             required
             autoComplete="given-name"
-            className="rounded-md border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-black/40 dark:border-white/20 dark:focus:border-white/40"
+            className="input"
           />
         </div>
         <div className="flex flex-1 flex-col gap-1">
@@ -31,7 +31,7 @@ export function SignupForm() {
             name="lastName"
             required
             autoComplete="family-name"
-            className="rounded-md border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-black/40 dark:border-white/20 dark:focus:border-white/40"
+            className="input"
           />
         </div>
       </div>
@@ -46,7 +46,7 @@ export function SignupForm() {
           type="email"
           required
           autoComplete="email"
-          className="rounded-md border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-black/40 dark:border-white/20 dark:focus:border-white/40"
+          className="input"
         />
       </div>
 
@@ -61,11 +61,9 @@ export function SignupForm() {
           required
           minLength={8}
           autoComplete="new-password"
-          className="rounded-md border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-black/40 dark:border-white/20 dark:focus:border-white/40"
+          className="input"
         />
-        <p className="text-xs text-black/50 dark:text-white/50">
-          At least 8 characters.
-        </p>
+        <p className="text-xs text-muted">At least 8 characters.</p>
       </div>
 
       {state?.error && (
@@ -77,15 +75,11 @@ export function SignupForm() {
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="mt-1 rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className="btn-primary mt-1">
         {pending ? "Creating account…" : "Create account"}
       </button>
 
-      <p className="text-center text-sm text-black/60 dark:text-white/60">
+      <p className="text-center text-sm text-muted">
         Already have an account?{" "}
         <Link href="/login" className="font-medium underline">
           Log in

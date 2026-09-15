@@ -31,9 +31,6 @@ const KNOWLEDGE_OPTIONS: {
   },
 ];
 
-const inputClass =
-  "rounded-md border border-black/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-black/40 dark:border-white/20 dark:focus:border-white/40";
-
 export function OnboardingWizard({
   initialKnowledgeLevel,
   initialInterests,
@@ -105,7 +102,7 @@ function StepShell({
           <button
             type="button"
             onClick={onSkip}
-            className="text-sm text-black/50 underline dark:text-white/50"
+            className="text-sm text-muted underline"
           >
             Skip
           </button>
@@ -116,7 +113,7 @@ function StepShell({
           type="button"
           onClick={onContinue}
           disabled={continueDisabled}
-          className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity disabled:opacity-50"
+          className="btn-primary"
         >
           {continueLabel}
         </button>
@@ -162,15 +159,11 @@ function KnowledgeStep({
             type="button"
             onClick={() => setValue(opt.value)}
             className={`flex flex-col items-start gap-0.5 rounded-md border px-3 py-2 text-left text-sm transition-colors ${
-              value === opt.value
-                ? "border-foreground"
-                : "border-black/15 dark:border-white/20"
+              value === opt.value ? "border-foreground" : "border-default"
             }`}
           >
             <span className="font-medium">{opt.label}</span>
-            <span className="text-black/50 dark:text-white/50">
-              {opt.example}
-            </span>
+            <span className="text-muted">{opt.example}</span>
           </button>
         ))}
       </div>
@@ -225,7 +218,7 @@ function InterestsStep({
             className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
               selected.includes(interest)
                 ? "border-foreground bg-foreground text-background"
-                : "border-black/15 dark:border-white/20"
+                : "border-default"
             }`}
           >
             {interest}
@@ -318,7 +311,7 @@ function GeminiKeyStep() {
       continueLabel="Finish"
       continueDisabled={!verified}
     >
-      <p className="text-sm text-black/60 dark:text-white/60">
+      <p className="text-sm text-muted">
         GDArena runs on your own free Gemini API key so it costs nothing to
         use.{" "}
         <a
@@ -340,13 +333,13 @@ function GeminiKeyStep() {
             setDraft(e.target.value);
             setStatus("idle");
           }}
-          className={inputClass}
+          className="input"
         />
         <button
           type="button"
           onClick={handleTest}
           disabled={!value.trim() || status === "testing"}
-          className="self-start rounded-md border border-black/15 px-3 py-1.5 text-sm disabled:opacity-50 dark:border-white/20"
+          className="btn-secondary self-start"
         >
           {status === "testing" ? "Testing…" : "Test key"}
         </button>
@@ -360,7 +353,7 @@ function GeminiKeyStep() {
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         )}
 
-        <p className="text-xs text-black/45 dark:text-white/45">
+        <p className="text-xs text-subtle">
           Stored only in this browser (localStorage). Never sent to our
           database or logged.
         </p>

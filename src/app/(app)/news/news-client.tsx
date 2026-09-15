@@ -112,51 +112,53 @@ export function NewsClient({ knowledgeLevel }: { knowledgeLevel: KnowledgeLevel 
     generateBrief(selected);
   }
 
-  if (view === "pdf") {
-    return <PdfUpload onExtracted={openPdfArticle} onBack={() => setView("list")} />;
-  }
-
-  if (view === "brief" && article) {
-    return (
-      <ArticleBrief
-        article={article}
-        knowledgeLevel={knowledgeLevel}
-        geminiKey={geminiKey}
-        brief={brief}
-        loading={briefLoading}
-        error={briefError}
-        onRetry={() => generateBrief(article)}
-        onBack={() => setView("list")}
-      />
-    );
-  }
-
   return (
-    <div className="flex flex-1 flex-col">
-      {!geminiKey && (
-        <p className="mx-4 mt-4 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/15">
-          Add your Gemini key in{" "}
-          <Link href="/profile" className="font-medium underline">
-            Profile
-          </Link>{" "}
-          to generate briefs.
-        </p>
+    <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
+      {view === "pdf" && (
+        <PdfUpload onExtracted={openPdfArticle} onBack={() => setView("list")} />
       )}
 
-      {feedsLoading && (
-        <p className="px-4 py-6 text-sm text-black/50 dark:text-white/50">
-          Loading your feeds…
-        </p>
-      )}
-      {feedsError && (
-        <p className="px-4 py-6 text-sm text-red-600 dark:text-red-400">{feedsError}</p>
-      )}
-      {!feedsLoading && !feedsError && (
-        <ArticleList
-          feeds={feeds}
-          onSelectArticle={openArticle}
-          onUploadPdf={() => setView("pdf")}
+      {view === "brief" && article && (
+        <ArticleBrief
+          article={article}
+          knowledgeLevel={knowledgeLevel}
+          geminiKey={geminiKey}
+          brief={brief}
+          loading={briefLoading}
+          error={briefError}
+          onRetry={() => generateBrief(article)}
+          onBack={() => setView("list")}
         />
+      )}
+
+      {view === "list" && (
+        <>
+          {!geminiKey && (
+            <p className="mx-4 mt-4 rounded-md border border-divider px-3 py-2 text-sm">
+              Add your Gemini key in{" "}
+              <Link href="/profile" className="font-medium underline">
+                Profile
+              </Link>{" "}
+              to generate briefs.
+            </p>
+          )}
+
+          {feedsLoading && (
+            <p className="px-4 py-6 text-sm text-muted">Loading your feeds…</p>
+          )}
+          {feedsError && (
+            <p className="px-4 py-6 text-sm text-red-600 dark:text-red-400">
+              {feedsError}
+            </p>
+          )}
+          {!feedsLoading && !feedsError && (
+            <ArticleList
+              feeds={feeds}
+              onSelectArticle={openArticle}
+              onUploadPdf={() => setView("pdf")}
+            />
+          )}
+        </>
       )}
     </div>
   );

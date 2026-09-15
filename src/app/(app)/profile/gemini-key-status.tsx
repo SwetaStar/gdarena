@@ -8,7 +8,7 @@ export function GeminiKeyStatus() {
   const hasKey = Boolean(storedKey);
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/15">
+    <div className="flex items-center justify-between gap-3 rounded-md border border-divider px-3 py-2 text-sm">
       <span>
         Gemini API key —{" "}
         {hasKey ? (

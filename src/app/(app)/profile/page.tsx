@@ -31,24 +31,18 @@ export default async function ProfilePage() {
           <h1 className="text-xl font-semibold">
             {profile?.first_name} {profile?.last_name}
           </h1>
-          <p className="text-sm text-black/50 dark:text-white/50">
-            {user.email}
-          </p>
+          <p className="text-sm text-muted">{user.email}</p>
         </div>
 
         <div className="flex flex-col gap-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-black/50 dark:text-white/50">
-              Knowledge level
-            </span>
+            <span className="text-muted">Knowledge level</span>
             <span className="capitalize">
               {profile?.knowledge_level ?? "Not set"}
             </span>
           </div>
           <div className="flex justify-between gap-4">
-            <span className="shrink-0 text-black/50 dark:text-white/50">
-              Interests
-            </span>
+            <span className="shrink-0 text-muted">Interests</span>
             <span className="text-right">
               {profile?.interests?.length ? profile.interests.join(", ") : "Not set"}
             </span>
@@ -58,7 +52,7 @@ export default async function ProfilePage() {
         <GeminiKeyStatus />
 
         <div className="flex flex-col gap-2">
-          <h2 className="flex items-center gap-1.5 text-sm font-medium text-black/50 dark:text-white/50">
+          <h2 className="flex items-center gap-1.5 text-sm font-medium text-muted">
             News sources <FeedUrlHelpTooltip />
           </h2>
           <FeedManager initialFeeds={feeds ?? []} />

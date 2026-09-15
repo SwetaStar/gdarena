@@ -52,12 +52,12 @@ export function PdfUpload({
       <button
         type="button"
         onClick={onBack}
-        className="self-start text-sm text-black/50 dark:text-white/50"
+        className="-m-1.5 self-start p-1.5 text-sm text-muted"
       >
         ← Back
       </button>
       <h1 className="text-lg font-semibold">Upload a PDF</h1>
-      <p className="text-sm text-black/60 dark:text-white/60">
+      <p className="text-sm text-muted">
         Text is extracted in your browser — only the extracted text is sent
         for analysis, never the file itself.
       </p>
@@ -74,7 +74,7 @@ export function PdfUpload({
       />
 
       {status === "extracting" && (
-        <p className="text-sm text-black/50 dark:text-white/50">Extracting text…</p>
+        <p className="text-sm text-muted">Extracting text…</p>
       )}
       {status === "error" && error && (
         <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
