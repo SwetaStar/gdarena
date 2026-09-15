@@ -3,9 +3,8 @@
 import { useState, useTransition } from "react";
 import { addFeed, removeFeed } from "@/app/actions/onboarding";
 import { InfoTooltip } from "@/components/info-tooltip";
-import { SourceDot } from "@/components/source-dot";
 import { SUGGESTED_FEEDS } from "@/lib/feeds/suggested";
-import { getFeedBrandColor } from "@/lib/feeds/brand-colors";
+import { getFeedBrand, hexToRgba } from "@/lib/feeds/brand";
 
 export type Feed = { id: string; name: string; url: string };
 
@@ -86,25 +85,40 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-col gap-2">
-        {feeds.map((feed) => (
-          <div
-            key={feed.id}
-            className="flex items-center justify-between gap-2 rounded-md border border-divider px-3 py-2 text-sm"
-          >
-            <span className="flex items-center gap-1.5 truncate">
-              <SourceDot url={feed.url} />
-              {feed.name}
-            </span>
-            <button
-              type="button"
-              onClick={() => handleRemove(feed.id)}
-              className="-m-1.5 shrink-0 p-1.5 text-subtle hover:text-black/70 dark:hover:text-white/70"
-              aria-label={`Remove ${feed.name}`}
+        {feeds.map((feed) => {
+          const brand = getFeedBrand(feed.url);
+          return (
+            <div
+              key={feed.id}
+              className="flex items-center justify-between gap-2 rounded-md border border-divider px-3 py-2 text-sm"
+              style={
+                brand
+                  ? { backgroundColor: hexToRgba(brand.hex, 0.1), borderColor: brand.hex }
+                  : undefined
+              }
             >
-              ✕
-            </button>
-          </div>
-        ))}
+              <span className="flex min-w-0 items-center gap-2 truncate">
+                {brand && (
+                  // eslint-disable-next-line @next/next/no-img-element -- small local logo, not worth next/image config for a handful of static icons
+                  <img
+                    src={brand.logo}
+                    alt=""
+                    className="h-5 w-5 shrink-0 rounded object-contain"
+                  />
+                )}
+                <span className="truncate">{feed.name}</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => handleRemove(feed.id)}
+                className="-m-1.5 shrink-0 p-1.5 text-subtle hover:text-black/70 dark:hover:text-white/70"
+                aria-label={`Remove ${feed.name}`}
+              >
+                ✕
+              </button>
+            </div>
+          );
+        })}
         {feeds.length === 0 && (
           <p className="text-sm text-muted">No feeds yet — add one below.</p>
         )}
@@ -115,16 +129,24 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
           <h3 className="text-xs font-medium text-subtle">Popular sources</h3>
           <div className="flex flex-wrap gap-2">
             {suggestions.map((s) => {
-              const color = getFeedBrandColor(s.url);
+              const brand = getFeedBrand(s.url);
               return (
                 <button
                   key={s.url}
                   type="button"
                   onClick={() => handleAddSuggestion(s)}
                   disabled={isPending}
-                  style={color ? { borderColor: color } : undefined}
-                  className="rounded-full border border-default px-3 py-1 text-xs disabled:opacity-50"
+                  style={
+                    brand
+                      ? { borderColor: brand.hex, backgroundColor: hexToRgba(brand.hex, 0.08) }
+                      : undefined
+                  }
+                  className="flex items-center gap-1.5 rounded-full border border-default px-3 py-1 text-xs disabled:opacity-50"
                 >
+                  {brand && (
+                    // eslint-disable-next-line @next/next/no-img-element -- small local logo, not worth next/image config for a handful of static icons
+                    <img src={brand.logo} alt="" className="h-3.5 w-3.5 rounded-sm object-contain" />
+                  )}
                   {pendingSuggestion === s.url ? "Adding…" : `+ ${s.name}`}
                 </button>
               );
