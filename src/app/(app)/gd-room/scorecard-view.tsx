@@ -77,6 +77,23 @@ export function ScorecardView({
         </ul>
       </div>
 
+      {scorecard.model_answer && (
+        <div className="flex flex-col gap-2 border-t border-divider pt-4">
+          <h2 className="text-sm font-medium text-muted">Model answer</h2>
+          <p className="text-xs text-subtle">
+            One of your contributions, restructured as Point → Reason → Example → Point:
+          </p>
+          <div className="rounded-md border border-divider px-3 py-2 text-sm">
+            <p className="mb-1 text-xs text-subtle">You said</p>
+            <p className="italic leading-relaxed">&ldquo;{scorecard.model_answer.original}&rdquo;</p>
+          </div>
+          <div className="rounded-md border border-default bg-black/[0.02] px-3 py-2 text-sm dark:bg-white/[0.03]">
+            <p className="mb-1 text-xs text-subtle">Better structured</p>
+            <p className="leading-relaxed">{scorecard.model_answer.improved}</p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2 border-t border-divider pt-4">
         <button
           type="button"

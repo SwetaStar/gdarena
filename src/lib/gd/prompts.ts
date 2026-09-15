@@ -50,6 +50,43 @@ Respond with ONLY valid JSON, no markdown code fences, no commentary, matching E
 }`;
 }
 
+/**
+ * One combined call at topic-selection time, before the timed session
+ * starts — the whole prep card (opening line, worked PREP example, entry
+ * phrases, closing line) in one JSON response, not four separate calls.
+ */
+export function buildPrepCardPrompt({
+  topic,
+  knowledgeLevel,
+}: {
+  topic: string;
+  knowledgeLevel: KnowledgeLevel;
+}): string {
+  return `You are a group discussion (GD) coach preparing an MBA entrance aspirant to discuss a specific topic before their practice session starts.
+
+Topic: "${topic}"
+
+Produce a short prep card:
+1. opening_line: one strong, natural sentence to open the discussion with in the first 30 seconds — states a clear position on THIS topic and invites the group in. Not generic ("This is an important topic") — an actual position.
+2. prep_example: a worked example of the PREP structure (Point, Reason, Example, Point) applied to THIS topic, as one contribution a student could actually make:
+   - point: the position/claim, one sentence, specific to this topic.
+   - reason: why, one sentence.
+   - example: a concrete example, statistic, or real-world reference relevant to this topic, one sentence.
+   - concluding_point: a short restatement that ties back to the opening point, one sentence.
+3. entry_phrases: exactly 3 short, natural, general-purpose phrases for entering or politely interrupting mid-discussion (not topic-specific) — in the style of "Building on that..." / "I'd like to offer a different angle..." / "If I may add a data point...".
+4. closing_line: one strong sentence to summarize/close the discussion on this topic if called on to wrap up.
+
+Calibrate language and vocabulary to a ${knowledgeLevel} knowledge level student.
+
+Respond with ONLY valid JSON, no markdown code fences, no commentary, matching EXACTLY this shape:
+{
+  "opening_line": "string",
+  "prep_example": {"point": "string", "reason": "string", "example": "string", "concluding_point": "string"},
+  "entry_phrases": ["string", "string", "string"],
+  "closing_line": "string"
+}`;
+}
+
 /** One call at the end of the session — scores only the "You" (user) turns. */
 export function buildScorecardPrompt({
   topic,
@@ -77,15 +114,20 @@ Score "You" on these 4 dimensions, each an integer 0-10:
 - content: quality and relevance of the points made
 - assertiveness: how promptly and confidently they entered and held their ground (use the timing data above)
 - data_usage: use of facts, numbers, or concrete examples to back points
-- structure: whether points were organized and built a clear line of reasoning, vs. rambling
+- structure: judge each of "You"'s contributions specifically against the PREP model — (a) did it open with a clear point before explaining, rather than wandering in? (b) was the point backed with a reason or example? (c) did it close the loop (a clear concluding thought) rather than trail off? (d) was it an appropriate length — not a one-liner too short to add anything, not a monologue that dominates the floor? Score low if points lacked a clear claim, lacked support, or just stopped rather than concluding.
 
-Also give 3-5 short, specific, actionable feedback lines (one sentence each) — reference actual moments from the transcript where possible, not generic advice.
+Also give 3-5 short, specific, actionable feedback lines (one sentence each) — reference actual moments from the transcript where possible. At least one line must be specifically about structure and must quote or closely paraphrase something "You" actually said — e.g. "Your second contribution had a strong point but no example — adding one would have made it land."
 
-If "You" never spoke, score content/data_usage/structure very low (0-2), assertiveness 0, and make the feedback entirely about the importance of entering early.
+Also produce model_answer: pick the ONE "You" contribution that was weakest structurally, quote it verbatim (or as close to verbatim as the transcript allows) as "original", and rewrite the SAME point as a well-structured Point → Reason → Example → Point version as "improved" — keep their actual position/content, just restructure and strengthen it. This is the single most valuable piece of feedback in the whole scorecard, so make the rewrite genuinely show what "well-structured" looks like, not a trivial tweak.
+
+If "You" never spoke at all, score content/data_usage/structure very low (0-2), assertiveness 0, make the feedback entirely about the importance of entering early, and set model_answer to null (nothing to rewrite).
 
 Respond with ONLY valid JSON, no markdown code fences, no commentary, matching EXACTLY this shape:
 {
   "scores": { "content": 0, "assertiveness": 0, "data_usage": 0, "structure": 0 },
-  "feedback": ["string", "string", "string"]
-}`;
+  "feedback": ["string", "string", "string"],
+  "model_answer": {"original": "string", "improved": "string"}
+}
+
+(model_answer must be the JSON value null, not the string "null", if "You" never spoke.)`;
 }

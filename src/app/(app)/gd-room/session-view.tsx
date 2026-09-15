@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useStoredGeminiKey } from "@/lib/gemini-key";
 import { useSpeechInput } from "@/lib/gd/use-speech-input";
 import type { KnowledgeLevel } from "@/lib/knowledge";
-import type { GDScorecard, Speaker, TranscriptMessage } from "@/lib/gd/types";
+import type { GDScorecard, PrepCard, Speaker, TranscriptMessage } from "@/lib/gd/types";
 
 const SESSION_SECONDS = 8 * 60;
 const WARNING_AT_REMAINING = 60;
@@ -29,11 +29,13 @@ function formatClock(totalSeconds: number): string {
 
 export function SessionView({
   topic,
+  prepCard,
   knowledgeLevel,
   onFinish,
   onExit,
 }: {
   topic: string;
+  prepCard: PrepCard;
   knowledgeLevel: KnowledgeLevel;
   onFinish: (transcript: TranscriptMessage[], scorecard: GDScorecard) => void;
   onExit: () => void;
@@ -240,6 +242,34 @@ export function SessionView({
           )}
         </div>
       </div>
+
+      <details className="group border-b border-divider px-4 py-2">
+        <summary className="flex cursor-pointer list-none items-center gap-1.5 text-xs font-medium text-muted select-none marker:content-none [&::-webkit-details-marker]:hidden">
+          Structure hint
+          <span className="transition-transform group-open:rotate-180" aria-hidden>
+            ▾
+          </span>
+        </summary>
+        <div className="mt-2 flex flex-col gap-2 text-xs leading-relaxed text-muted">
+          <p>
+            <span className="font-semibold text-foreground">Point</span> →{" "}
+            <span className="font-semibold text-foreground">Reason</span> →{" "}
+            <span className="font-semibold text-foreground">Example</span> →{" "}
+            <span className="font-semibold text-foreground">Point</span>
+          </p>
+          <p className="italic">
+            &ldquo;{prepCard.prep_example.point}&rdquo; → &ldquo;{prepCard.prep_example.reason}&rdquo; → &ldquo;
+            {prepCard.prep_example.example}&rdquo; → &ldquo;{prepCard.prep_example.concluding_point}&rdquo;
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {prepCard.entry_phrases.map((phrase) => (
+              <span key={phrase} className="rounded-full border border-default px-2 py-0.5">
+                {phrase}
+              </span>
+            ))}
+          </div>
+        </div>
+      </details>
 
       <div className="flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4">
         {messages.map((m) => {

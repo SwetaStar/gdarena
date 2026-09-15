@@ -98,11 +98,22 @@ export async function POST(request: Request) {
   }
 
   // Store only the outcome — topic, scores, feedback. Never the transcript.
+  // The sessions table has no dedicated model-answer column, so it's
+  // folded into the feedback array as one more line rather than a schema
+  // change — the API response below still returns it as a structured
+  // object for the richer scorecard UI.
+  const feedbackForStorage = parsed.model_answer
+    ? [
+        ...parsed.feedback,
+        `Model answer — instead of "${parsed.model_answer.original}", try: "${parsed.model_answer.improved}"`,
+      ]
+    : parsed.feedback;
+
   const { error: dbError } = await supabase.from("sessions").insert({
     user_id: user.id,
     topic,
     scores: parsed.scores,
-    feedback: parsed.feedback,
+    feedback: feedbackForStorage,
   });
 
   if (dbError) {
