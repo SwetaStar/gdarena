@@ -8,17 +8,24 @@ export type LLMResult =
   | { ok: true; text: string }
   | { ok: false; error: string; rateLimited?: boolean };
 
-// "gemini-2.0-flash" 404s as of 2026-09 — Google has moved the free tier
-// past 2.x entirely. Verified live against GET /v1beta/models with a real
-// key (see git history/PR notes): "gemini-flash-latest" is Google's own
-// self-updating alias for the current flash model (resolved to
-// "gemini-3.8-flash" at verification time) and confirmed working for both
-// plain generateContent and responseMimeType: "application/json" calls.
-// Using the alias rather than a pinned dated snapshot means this doesn't
-// go stale again the next time Google ships a flash model — pin to a
-// specific dated model instead if you want deterministic behavior over
-// auto-updating.
-const GEMINI_MODEL = "gemini-flash-latest";
+// History (all verified live against real API responses, not memory):
+// - "gemini-2.0-flash" 404s as of 2026-09 — free tier moved past 2.x.
+// - Switched to "gemini-flash-latest" (Google's self-updating alias),
+//   which resolved to "gemini-3.8-flash". That turned out to have a free
+//   tier quota of just 20 requests/DAY (confirmed via the 429 response's
+//   own quota details: quotaId
+//   "GenerateRequestsPerDayPerProjectPerModel-FreeTier", quotaValue "20")
+//   — easily exhausted by a single GD Room session, let alone real usage.
+//   The "-latest" alias gives no control over which model (and thus which
+//   quota tier) you land on, which is exactly the risk that bit us here.
+// - Pinned to "gemini-3.6-flash" instead: Google's own 404 error message
+//   for a different deprecated model explicitly pointed here ("update
+//   your code to use models/gemini-3.6-flash"), and it's confirmed
+//   working for both plain and responseMimeType: "application/json"
+//   calls. Pinning a specific model that Google itself calls out as the
+//   stable target is a more predictable choice than an alias that could
+//   silently land on another low-quota model next time Google ships one.
+const GEMINI_MODEL = "gemini-3.6-flash";
 
 /**
  * Calls the given provider with the given API key. Runs server-side only —
