@@ -3,7 +3,9 @@
 import { useState, useTransition } from "react";
 import { addFeed, removeFeed } from "@/app/actions/onboarding";
 import { InfoTooltip } from "@/components/info-tooltip";
+import { SourceDot } from "@/components/source-dot";
 import { SUGGESTED_FEEDS } from "@/lib/feeds/suggested";
+import { getFeedBrandColor } from "@/lib/feeds/brand-colors";
 
 export type Feed = { id: string; name: string; url: string };
 
@@ -89,7 +91,10 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
             key={feed.id}
             className="flex items-center justify-between gap-2 rounded-md border border-divider px-3 py-2 text-sm"
           >
-            <span className="truncate">{feed.name}</span>
+            <span className="flex items-center gap-1.5 truncate">
+              <SourceDot url={feed.url} />
+              {feed.name}
+            </span>
             <button
               type="button"
               onClick={() => handleRemove(feed.id)}
@@ -109,17 +114,21 @@ export function FeedManager({ initialFeeds }: { initialFeeds: Feed[] }) {
         <div className="flex flex-col gap-2 border-t border-divider pt-4">
           <h3 className="text-xs font-medium text-subtle">Popular sources</h3>
           <div className="flex flex-wrap gap-2">
-            {suggestions.map((s) => (
-              <button
-                key={s.url}
-                type="button"
-                onClick={() => handleAddSuggestion(s)}
-                disabled={isPending}
-                className="rounded-full border border-default px-3 py-1 text-xs disabled:opacity-50"
-              >
-                {pendingSuggestion === s.url ? "Adding…" : `+ ${s.name}`}
-              </button>
-            ))}
+            {suggestions.map((s) => {
+              const color = getFeedBrandColor(s.url);
+              return (
+                <button
+                  key={s.url}
+                  type="button"
+                  onClick={() => handleAddSuggestion(s)}
+                  disabled={isPending}
+                  style={color ? { borderColor: color } : undefined}
+                  className="rounded-full border border-default px-3 py-1 text-xs disabled:opacity-50"
+                >
+                  {pendingSuggestion === s.url ? "Adding…" : `+ ${s.name}`}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { formatRelativeTime } from "@/lib/format-time";
+import { SourceDot } from "@/components/source-dot";
 import type { FeedArticle, FeedResult } from "./types";
 
 export function ArticleList({
@@ -24,8 +25,11 @@ export function ArticleList({
 
       {feeds.map((feed) => (
         <section key={feed.id} className="flex flex-col gap-2">
-          <div className="flex items-baseline justify-between px-4">
-            <h2 className="text-sm font-semibold">{feed.name}</h2>
+          <div className="flex items-center justify-between px-4">
+            <h2 className="flex items-center gap-1.5 text-sm font-semibold">
+              <SourceDot url={feed.url} />
+              {feed.name}
+            </h2>
             {feed.paywalled && (
               <span className="text-xs text-subtle">
                 Summary only — upload PDF for full analysis
