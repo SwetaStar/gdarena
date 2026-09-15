@@ -3,6 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 import { callLLM } from "@/lib/llm/callLLM";
 import { extractJson } from "@/lib/llm/parseJson";
 import { buildBriefPrompt, truncateArticleText } from "@/lib/briefs/prompts";
+
+// callLLM retries a few times on Gemini's transient 503s — give this route
+// more headroom than the platform default so a retried call isn't cut off
+// mid-request.
+export const maxDuration = 30;
 import { isBrief } from "@/lib/briefs/types";
 import { KNOWLEDGE_LEVELS, type KnowledgeLevel } from "@/lib/knowledge";
 

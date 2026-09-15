@@ -4,6 +4,11 @@ import { callLLM } from "@/lib/llm/callLLM";
 import { buildChatPrompt, truncateArticleText } from "@/lib/briefs/prompts";
 import { KNOWLEDGE_LEVELS, type KnowledgeLevel } from "@/lib/knowledge";
 
+// callLLM retries a few times on Gemini's transient 503s — give this route
+// more headroom than the platform default so a retried call isn't cut off
+// mid-request.
+export const maxDuration = 30;
+
 const MAX_QUESTIONS = 5;
 
 type ChatMessage = { role: "user" | "assistant"; content: string };

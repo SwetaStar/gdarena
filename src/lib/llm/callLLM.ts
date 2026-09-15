@@ -51,6 +51,17 @@ export async function callLLM(
   }
 }
 
+// Google's free-tier flash model returns 503 ("model overloaded") fairly
+// often under load — confirmed live: three calls one second apart came
+// back 503, 200, 503. It's transient, not a real failure, so retry a
+// couple of times with a short delay before surfacing it as an error.
+const MAX_OVERLOAD_ATTEMPTS = 3;
+const OVERLOAD_RETRY_DELAY_MS = 800;
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function callGemini(
   apiKey: string,
   prompt: string,
@@ -58,48 +69,58 @@ async function callGemini(
 ): Promise<LLMResult> {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        ...(options.json
-          ? { generationConfig: { responseMimeType: "application/json" } }
-          : {}),
-      }),
-    });
-  } catch {
-    return {
-      ok: false,
-      error: "Could not reach Gemini. Check your connection and try again.",
-    };
+  for (let attempt = 1; attempt <= MAX_OVERLOAD_ATTEMPTS; attempt++) {
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          ...(options.json
+            ? { generationConfig: { responseMimeType: "application/json" } }
+            : {}),
+        }),
+      });
+    } catch {
+      return {
+        ok: false,
+        error: "Could not reach Gemini. Check your connection and try again.",
+      };
+    }
+
+    if (res.status === 429) {
+      return {
+        ok: false,
+        error: "Gemini rate limit hit — wait 30s and try again.",
+        rateLimited: true,
+      };
+    }
+
+    if (res.status === 503 && attempt < MAX_OVERLOAD_ATTEMPTS) {
+      await sleep(OVERLOAD_RETRY_DELAY_MS * attempt);
+      continue;
+    }
+
+    if (!res.ok) {
+      // Surface the provider's status without echoing the request (which
+      // could include the key in a future provider's error payload).
+      return { ok: false, error: `Gemini request failed (${res.status}).` };
+    }
+
+    const data = await res.json();
+    const text: unknown = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (typeof text !== "string" || !text) {
+      return { ok: false, error: "Gemini returned an empty response." };
+    }
+
+    return { ok: true, text };
   }
 
-  if (res.status === 429) {
-    return {
-      ok: false,
-      error: "Gemini rate limit hit — wait 30s and try again.",
-      rateLimited: true,
-    };
-  }
-
-  if (!res.ok) {
-    // Surface the provider's status without echoing the request (which
-    // could include the key in a future provider's error payload).
-    return { ok: false, error: `Gemini request failed (${res.status}).` };
-  }
-
-  const data = await res.json();
-  const text: unknown = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-  if (typeof text !== "string" || !text) {
-    return { ok: false, error: "Gemini returned an empty response." };
-  }
-
-  return { ok: true, text };
+  // Unreachable — the loop always returns on its last iteration.
+  return { ok: false, error: "Gemini request failed." };
 }
