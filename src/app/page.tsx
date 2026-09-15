@@ -1,12 +1,13 @@
-export default function Page() {
-  return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-        GDArena — coming soon
-      </h1>
-      <p className="text-sm text-black/60 dark:text-white/60">
-        Group discussion prep and daily news for MBA aspirants.
-      </p>
-    </main>
-  );
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+
+export default async function RootPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Proxy (src/proxy.ts) already routes signed-out visitors to /login before
+  // this renders; this covers direct server access as a fallback.
+  redirect(user ? "/news" : "/login");
 }
